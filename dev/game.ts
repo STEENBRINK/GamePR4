@@ -5,13 +5,18 @@ class Game {
     private bombCounter: number
     private car:Car
     private bombs:Array<Bomb>
+    private explosions:Array<Explosion>
     private score:number
     private startTime:number
     private scoreElement:HTMLElement
+    private healthELement:HTMLElement
     private speed:number
+    private health:number
 
     constructor() {
+        this.health=3
         this.speed = 2000
+        this.explosions = new Array<Explosion>()
         //create backgrounds
         this.backgrounds = new Array<Background>()
         this.backgrounds.push(new Background(0, "0"))
@@ -22,8 +27,11 @@ class Game {
         let date = new Date()
         this.startTime = date.getTime()
         this.scoreElement = document.createElement("score")
+        this.healthELement = document.createElement("health")
         document.body.appendChild(this.scoreElement)
+        document.body.appendChild(this.healthELement)
         this.scoreElement.innerHTML = this.score.toString()
+        this.healthELement.innerHTML = "Health: " + this.health
         //create car
         this.car = new Car()
         //create bombs
@@ -35,29 +43,40 @@ class Game {
     }
     
     private gameLoop(){
-        this.checkCollision()
-        for(let i = 0; i<(this.backgrounds.length);i++){
-            if(this.backgrounds[i].getRectangle().left <= -1280){
-                //console.log("i: " + i)
-                document.body.removeChild(this.backgrounds[i].div)
-                this.backgrounds.splice(i,1)
-                this.backgrounds.push(new Background(1280, this.bgCounter.toString()))
-                this.bgCounter++
-            }else{
-                this.backgrounds[i].move();
+        //console.log(this.health)
+        if(this.health>0){
+            this.checkCollision()
+            for(let i = 0; i<(this.backgrounds.length);i++){
+                if(this.backgrounds[i].getRectangle().left <= -1280){
+                    //console.log("i: " + i)
+                    document.body.removeChild(this.backgrounds[i].div)
+                    this.backgrounds.splice(i,1)
+                    this.backgrounds.push(new Background(1280, this.bgCounter.toString()))
+                    this.bgCounter++
+                }else{
+                    this.backgrounds[i].move();
+                }
             }
-        }
-        this.car.move()
-        for(let k of this.bombs){
-            k.checkOutOfBounds();
-        }
-        this.registerScore()
+            this.car.move()
+            for(let k of this.bombs){
+                k.checkOutOfBounds();
+            }
+            for(let i of this.explosions){
+                i.checkOutOfBounds();
+            }
+            this.registerScore()
 
-        requestAnimationFrame(()=>this.gameLoop())
+            requestAnimationFrame(()=>this.gameLoop())
+        }else{
+            let gameOver:HTMLElement = document.createElement("gameover")
+            document.body.appendChild(gameOver)
+            gameOver.addEventListener("click", ()=> location.reload())
+            gameOver.innerHTML = "Game Over"
+        }
     }
 
     private checkBomb(): void{
-        if (this.bombCounter<15) {
+        if (this.bombCounter<15 && this.health > 0) {
             this.createBomb()
         }
         setTimeout(()=> this.checkBomb(), this.speed)
@@ -65,7 +84,7 @@ class Game {
 
     private createBomb(): void {
         let temp: number = Math.random()*3
-        //console.log(temp)
+        console.log(temp)
         if(temp<1){
             this.bombs.push(new Bomb(75, 0))
         }else if (temp<2){
@@ -80,7 +99,7 @@ class Game {
         let time:number = new Date().getTime()
         this.score=time-this.startTime
         //console.log(this.score)
-        this.scoreElement.innerHTML = this.score.toString()
+        this.scoreElement.innerHTML = "Score: " + this.score
 
         this.speed = 2000-(this.score/1000)
     }
@@ -89,7 +108,10 @@ class Game {
         for(let i of this.bombs){
             if(i.lane == this.car.lane){
                 if((i.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((i.getRectangle().left) > this.car.getRectangle().left)){
-                    i.div.style.backgroundImage = "url(../images/explosion.png)"
+                    this.explosions.push(new Explosion(i.x, i.y, i.lane))
+                    document.body.removeChild(i.div)
+                    this.health--
+                    this.healthELement.innerHTML = "Health: " + this.health
                 }
             }
         }

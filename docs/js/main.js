@@ -100,9 +100,24 @@ var Car = (function (_super) {
     };
     return Car;
 }(GameObject));
+var Explosion = (function (_super) {
+    __extends(Explosion, _super);
+    function Explosion(x, y, lane) {
+        return _super.call(this, "explosion", lane, x, y, -3) || this;
+    }
+    Explosion.prototype.checkOutOfBounds = function () {
+        if (this.getRectangle().left < -100) {
+            document.body.removeChild(this.div);
+        }
+        _super.prototype.move.call(this);
+    };
+    return Explosion;
+}(GameObject));
 var Game = (function () {
     function Game() {
+        this.health = 3;
         this.speed = 2000;
+        this.explosions = new Array();
         this.backgrounds = new Array();
         this.backgrounds.push(new Background(0, "0"));
         this.backgrounds.push(new Background(1280, "1"));
@@ -111,8 +126,11 @@ var Game = (function () {
         var date = new Date();
         this.startTime = date.getTime();
         this.scoreElement = document.createElement("score");
+        this.healthELement = document.createElement("health");
         document.body.appendChild(this.scoreElement);
+        document.body.appendChild(this.healthELement);
         this.scoreElement.innerHTML = this.score.toString();
+        this.healthELement.innerHTML = "Health: " + this.health;
         this.car = new Car();
         this.bombs = new Array();
         this.bombCounter = document.getElementsByTagName("bomb").length;
@@ -121,35 +139,48 @@ var Game = (function () {
     }
     Game.prototype.gameLoop = function () {
         var _this = this;
-        this.checkCollision();
-        for (var i = 0; i < (this.backgrounds.length); i++) {
-            if (this.backgrounds[i].getRectangle().left <= -1280) {
-                document.body.removeChild(this.backgrounds[i].div);
-                this.backgrounds.splice(i, 1);
-                this.backgrounds.push(new Background(1280, this.bgCounter.toString()));
-                this.bgCounter++;
+        if (this.health > 0) {
+            this.checkCollision();
+            for (var i = 0; i < (this.backgrounds.length); i++) {
+                if (this.backgrounds[i].getRectangle().left <= -1280) {
+                    document.body.removeChild(this.backgrounds[i].div);
+                    this.backgrounds.splice(i, 1);
+                    this.backgrounds.push(new Background(1280, this.bgCounter.toString()));
+                    this.bgCounter++;
+                }
+                else {
+                    this.backgrounds[i].move();
+                }
             }
-            else {
-                this.backgrounds[i].move();
+            this.car.move();
+            for (var _i = 0, _a = this.bombs; _i < _a.length; _i++) {
+                var k = _a[_i];
+                k.checkOutOfBounds();
             }
+            for (var _b = 0, _c = this.explosions; _b < _c.length; _b++) {
+                var i = _c[_b];
+                i.checkOutOfBounds();
+            }
+            this.registerScore();
+            requestAnimationFrame(function () { return _this.gameLoop(); });
         }
-        this.car.move();
-        for (var _i = 0, _a = this.bombs; _i < _a.length; _i++) {
-            var k = _a[_i];
-            k.checkOutOfBounds();
+        else {
+            var gameOver = document.createElement("gameover");
+            document.body.appendChild(gameOver);
+            gameOver.addEventListener("click", function () { return location.reload(); });
+            gameOver.innerHTML = "Game Over";
         }
-        this.registerScore();
-        requestAnimationFrame(function () { return _this.gameLoop(); });
     };
     Game.prototype.checkBomb = function () {
         var _this = this;
-        if (this.bombCounter < 15) {
+        if (this.bombCounter < 15 && this.health > 0) {
             this.createBomb();
         }
         setTimeout(function () { return _this.checkBomb(); }, this.speed);
     };
     Game.prototype.createBomb = function () {
         var temp = Math.random() * 3;
+        console.log(temp);
         if (temp < 1) {
             this.bombs.push(new Bomb(75, 0));
         }
@@ -164,7 +195,7 @@ var Game = (function () {
     Game.prototype.registerScore = function () {
         var time = new Date().getTime();
         this.score = time - this.startTime;
-        this.scoreElement.innerHTML = this.score.toString();
+        this.scoreElement.innerHTML = "Score: " + this.score;
         this.speed = 2000 - (this.score / 1000);
     };
     Game.prototype.checkCollision = function () {
@@ -172,7 +203,10 @@ var Game = (function () {
             var i = _a[_i];
             if (i.lane == this.car.lane) {
                 if ((i.getRectangle().left < (this.car.getRectangle().left + this.car.getRectangle().width)) && ((i.getRectangle().left) > this.car.getRectangle().left)) {
-                    i.div.style.backgroundImage = "url(../images/explosion.png)";
+                    this.explosions.push(new Explosion(i.x, i.y, i.lane));
+                    document.body.removeChild(i.div);
+                    this.health--;
+                    this.healthELement.innerHTML = "Health: " + this.health;
                 }
             }
         }

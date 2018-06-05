@@ -1,8 +1,8 @@
 class GameObject {
     public div : HTMLElement
-    protected x : number
-    protected y : number
-    protected speedX: number
+    public x : number
+    public y : number
+    public speedX: number
     protected speedY: number
     public lane:number
     

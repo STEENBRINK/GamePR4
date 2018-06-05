@@ -44,9 +44,32 @@ bomb {
     z-index: 1;
 }
 
+explosion {
+    background-image: url(../images/explosion.png);
+    width: 100px;
+    height: 100px;
+    z-index: 1;
+}
+
 score{
     color:red;
     z-index: 2;
+    left: 20px;
+    top: 20px;
+}
+
+gameover{
+    color: red;
+    left: 520.5px;
+    top: 325px;
+    font-size: 50px;
+    cursor: pointer;
+}
+
+health{
+    color: red;
+    left: 20px;
+    top: 60px;
 }
 
 * {
