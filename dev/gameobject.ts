@@ -4,10 +4,13 @@ class GameObject {
     protected y : number
     protected speedX: number
     protected speedY: number
+    public lane:number
     
-    constructor(element:string, x:number, y:number, speedX:number=0, speedY:number=0) {
+    constructor(element:string, lane:number, x:number, y:number, speedX:number=0, speedY:number=0) {
         this.div = document.createElement(element)
         document.body.appendChild(this.div)
+        
+        this.lane=lane
 
         this.x = x
         this.y = y

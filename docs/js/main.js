@@ -9,11 +9,12 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var GameObject = (function () {
-    function GameObject(element, x, y, speedX, speedY) {
+    function GameObject(element, lane, x, y, speedX, speedY) {
         if (speedX === void 0) { speedX = 0; }
         if (speedY === void 0) { speedY = 0; }
         this.div = document.createElement(element);
         document.body.appendChild(this.div);
+        this.lane = lane;
         this.x = x;
         this.y = y;
         this.speedX = speedX;
@@ -44,8 +45,8 @@ var Background = (function (_super) {
 }(GameObject));
 var Bomb = (function (_super) {
     __extends(Bomb, _super);
-    function Bomb(x) {
-        return _super.call(this, "bomb", 1280, x, -5) || this;
+    function Bomb(y, lane) {
+        return _super.call(this, "bomb", lane, 1280, y, -8) || this;
     }
     Bomb.prototype.checkOutOfBounds = function () {
         if (this.getRectangle().left < -100) {
@@ -58,9 +59,7 @@ var Bomb = (function (_super) {
 var Car = (function (_super) {
     __extends(Car, _super);
     function Car() {
-        var _this = _super.call(this, "car", 100, 75) || this;
-        _this.lane = 0;
-        _this.prevLane = 0;
+        var _this = _super.call(this, "car", 0, 100, 75) || this;
         _this.upkey = 38;
         _this.downkey = 40;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
@@ -69,13 +68,16 @@ var Car = (function (_super) {
     Car.prototype.onKeyDown = function (e) {
         switch (e.keyCode) {
             case this.upkey:
+                console.log(this.lane);
                 switch (this.lane) {
                     case 0:
                         break;
                     case 1:
+                        this.y -= 235;
                         this.lane--;
                         break;
                     case 2:
+                        this.y -= 235;
                         this.lane--;
                         break;
                 }
@@ -85,55 +87,43 @@ var Car = (function (_super) {
                     case 2:
                         break;
                     case 1:
+                        this.y += 235;
                         this.lane++;
                         break;
                     case 0:
+                        this.y += 235;
                         this.lane++;
                         break;
                 }
                 break;
         }
-        this.moveCar();
-    };
-    Car.prototype.moveCar = function () {
-        switch (this.lane) {
-            case (0):
-                if (!(this.prevLane == 0)) {
-                    this.y = 75;
-                }
-                break;
-            case (1):
-                if (!(this.prevLane == 1)) {
-                    this.y = 300;
-                }
-                break;
-            case (2):
-                if (!(this.prevLane == 1)) {
-                    this.y = 535;
-                }
-                break;
-        }
-        this.prevLane = this.lane;
     };
     return Car;
 }(GameObject));
 var Game = (function () {
     function Game() {
+        this.speed = 2000;
         this.backgrounds = new Array();
         this.backgrounds.push(new Background(0, "0"));
         this.backgrounds.push(new Background(1280, "1"));
         this.bgCounter = 2;
+        this.score = 0;
+        var date = new Date();
+        this.startTime = date.getTime();
+        this.scoreElement = document.createElement("score");
+        document.body.appendChild(this.scoreElement);
+        this.scoreElement.innerHTML = this.score.toString();
         this.car = new Car();
         this.bombs = new Array();
-        this.bombCounter = 0;
+        this.bombCounter = document.getElementsByTagName("bomb").length;
         this.checkBomb();
         this.gameLoop();
     }
     Game.prototype.gameLoop = function () {
         var _this = this;
+        this.checkCollision();
         for (var i = 0; i < (this.backgrounds.length); i++) {
             if (this.backgrounds[i].getRectangle().left <= -1280) {
-                console.log("i: " + i);
                 document.body.removeChild(this.backgrounds[i].div);
                 this.backgrounds.splice(i, 1);
                 this.backgrounds.push(new Background(1280, this.bgCounter.toString()));
@@ -148,28 +138,44 @@ var Game = (function () {
             var k = _a[_i];
             k.checkOutOfBounds();
         }
+        this.registerScore();
         requestAnimationFrame(function () { return _this.gameLoop(); });
     };
     Game.prototype.checkBomb = function () {
         var _this = this;
-        if (this.bombCounter < 3) {
+        if (this.bombCounter < 15) {
             this.createBomb();
         }
-        setTimeout(function () { return _this.checkBomb(); }, 1500);
+        setTimeout(function () { return _this.checkBomb(); }, this.speed);
     };
     Game.prototype.createBomb = function () {
         var temp = Math.random() * 3;
-        console.log(temp);
         if (temp < 1) {
-            this.bombs.push(new Bomb(75));
+            this.bombs.push(new Bomb(75, 0));
         }
         else if (temp < 2) {
-            this.bombs.push(new Bomb(300));
+            this.bombs.push(new Bomb(300, 1));
         }
         else {
-            this.bombs.push(new Bomb(535));
+            this.bombs.push(new Bomb(535, 2));
         }
-        this.bombCounter++;
+        this.bombCounter = document.getElementsByTagName("bomb").length;
+    };
+    Game.prototype.registerScore = function () {
+        var time = new Date().getTime();
+        this.score = time - this.startTime;
+        this.scoreElement.innerHTML = this.score.toString();
+        this.speed = 2000 - (this.score / 1000);
+    };
+    Game.prototype.checkCollision = function () {
+        for (var _i = 0, _a = this.bombs; _i < _a.length; _i++) {
+            var i = _a[_i];
+            if (i.lane == this.car.lane) {
+                if ((i.getRectangle().left < (this.car.getRectangle().left + this.car.getRectangle().width)) && ((i.getRectangle().left) > this.car.getRectangle().left)) {
+                    i.div.style.backgroundImage = "url(../images/explosion.png)";
+                }
+            }
+        }
     };
     return Game;
 }());

@@ -44,6 +44,11 @@ bomb {
     z-index: 1;
 }
 
+score{
+    color:red;
+    z-index: 2;
+}
+
 * {
     box-sizing: border-box;
 }

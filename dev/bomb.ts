@@ -1,8 +1,8 @@
 /// <reference path="gameobject.ts"/>
 
 class Bomb extends GameObject {
-    constructor(x:number){
-        super("bomb", 1280, x, -5)
+    constructor(y:number, lane:number){
+        super("bomb", lane, 1280, y, -8)
     }
 
     checkOutOfBounds():void{
