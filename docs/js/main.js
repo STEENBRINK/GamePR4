@@ -118,7 +118,7 @@ var Game = (function () {
         this.health = 3;
         this.speed = 2000;
         this.explosions = new Array();
-        this.audioFiles = new Array("DeathFlash.flac", "doh_wav_cut.wav");
+        this.audioFiles = new Array("explosion.flac", "gameover.wav", "car.wav");
         this.backgrounds = new Array();
         this.backgrounds.push(new Background(0, "0"));
         this.backgrounds.push(new Background(1280, "1"));
@@ -133,6 +133,7 @@ var Game = (function () {
         this.scoreElement.innerHTML = this.score.toString();
         this.healthELement.innerHTML = "Health: " + this.health;
         this.car = new Car();
+        var audio = new SoundPlayer(this.car, this.audioFiles[2]);
         this.bombs = new Array();
         this.bombCounter = document.getElementsByTagName("bomb").length;
         this.checkBomb();

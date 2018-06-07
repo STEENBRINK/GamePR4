@@ -18,7 +18,7 @@ class Game {
         this.health=3
         this.speed = 2000
         this.explosions = new Array<Explosion>()
-        this.audioFiles = new Array("DeathFlash.flac", "doh_wav_cut.wav")
+        this.audioFiles = new Array("explosion.flac", "gameover.wav", "car.wav")
         //create backgrounds
         this.backgrounds = new Array<Background>()
         this.backgrounds.push(new Background(0, "0"))
@@ -36,6 +36,7 @@ class Game {
         this.healthELement.innerHTML = "Health: " + this.health
         //create car
         this.car = new Car()
+        let audio = new SoundPlayer(this.car, this.audioFiles[2])
         //create bombs
         this.bombs = new Array<Bomb>()
         this.bombCounter = document.getElementsByTagName("bomb").length
