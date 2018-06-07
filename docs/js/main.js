@@ -159,7 +159,7 @@ var Game = (function () {
             document.body.appendChild(gameOver);
             gameOver.addEventListener("click", function () { return location.reload(); });
             gameOver.innerHTML = "Game Over";
-            setTimeout(this.dohSound(), 500);
+            setTimeout(this.dohSound(), 1000);
         }
     };
     Game.prototype.checkBackgrounds = function () {

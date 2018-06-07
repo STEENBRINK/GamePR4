@@ -62,7 +62,7 @@ class Game {
             document.body.appendChild(gameOver)
             gameOver.addEventListener("click", ()=> location.reload())
             gameOver.innerHTML = "Game Over"
-            setTimeout(this.dohSound(), 500)
+            setTimeout(this.dohSound(), 1000)
         }
     }
 
