@@ -118,6 +118,7 @@ var Game = (function () {
         this.health = 3;
         this.speed = 2000;
         this.explosions = new Array();
+        this.audioFiles = new Array("DeathFlash.flac", "doh_wav_cut.wav");
         this.backgrounds = new Array();
         this.backgrounds.push(new Background(0, "0"));
         this.backgrounds.push(new Background(1280, "1"));
@@ -159,7 +160,9 @@ var Game = (function () {
             document.body.appendChild(gameOver);
             gameOver.addEventListener("click", function () { return location.reload(); });
             gameOver.innerHTML = "Game Over";
-            setTimeout(this.dohSound(), 1000);
+            setTimeout(function () {
+                var audio = new SoundPlayer(_this.car, _this.audioFiles[1]);
+            }, 800);
         }
     };
     Game.prototype.checkBackgrounds = function () {
@@ -209,28 +212,27 @@ var Game = (function () {
                 if ((i.getRectangle().left < (this.car.getRectangle().left + this.car.getRectangle().width)) && ((i.getRectangle().left) > this.car.getRectangle().left)) {
                     this.explosions.push(new Explosion(i.x, i.y, i.lane));
                     document.body.removeChild(i.div);
-                    this.explosionSound();
+                    var audio = new SoundPlayer(this.car, this.audioFiles[0]);
                     this.health--;
                     this.healthELement.innerHTML = "Health: " + this.health;
                 }
             }
         }
     };
-    Game.prototype.explosionSound = function () {
-        var audio = document.createElement("audio");
-        audio.src = "../docs/audio/DeathFlash.flac";
-        audio.loop = false;
-        audio.play();
-        this.car.div.appendChild(audio);
-    };
-    Game.prototype.dohSound = function () {
-        var audio = document.createElement("audio");
-        audio.src = "../docs/audio/doh_wav_cut.wav";
-        audio.loop = false;
-        audio.play();
-        this.car.div.appendChild(audio);
-    };
     return Game;
 }());
 window.addEventListener("load", function () { return new Game(); });
+var SoundPlayer = (function () {
+    function SoundPlayer(car, name) {
+        this.playSound(name, car);
+    }
+    SoundPlayer.prototype.playSound = function (name, car) {
+        var audio = document.createElement("audio");
+        audio.src = "../docs/audio/" + name;
+        audio.loop = false;
+        audio.play();
+        car.div.appendChild(audio);
+    };
+    return SoundPlayer;
+}());
 //# sourceMappingURL=main.js.map

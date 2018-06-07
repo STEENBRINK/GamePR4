@@ -12,11 +12,13 @@ class Game {
     private healthELement:HTMLElement
     private speed:number
     private health:number
+    private audioFiles:Array<string>
 
     constructor() {
         this.health=3
         this.speed = 2000
         this.explosions = new Array<Explosion>()
+        this.audioFiles = new Array("DeathFlash.flac", "doh_wav_cut.wav")
         //create backgrounds
         this.backgrounds = new Array<Background>()
         this.backgrounds.push(new Background(0, "0"))
@@ -62,7 +64,9 @@ class Game {
             document.body.appendChild(gameOver)
             gameOver.addEventListener("click", ()=> location.reload())
             gameOver.innerHTML = "Game Over"
-            setTimeout(this.dohSound(), 1000)
+            setTimeout(()=> {
+                let audio = new SoundPlayer(this.car, this.audioFiles[1])
+            }, 800)
         }
     }
 
@@ -114,30 +118,12 @@ class Game {
                 if((i.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((i.getRectangle().left) > this.car.getRectangle().left)){
                     this.explosions.push(new Explosion(i.x, i.y, i.lane))
                     document.body.removeChild(i.div)
-                    this.explosionSound()
+                    let audio = new SoundPlayer(this.car, this.audioFiles[0])
                     this.health--
                     this.healthELement.innerHTML = "Health: " + this.health
                 }
             }
         }
-    }
-
-    explosionSound():void{
-        let audio = document.createElement("audio");
-        
-        audio.src = "../docs/audio/DeathFlash.flac";
-        audio.loop = false;
-        audio.play();
-        this.car.div.appendChild(audio)
-    }
-
-    dohSound():void{
-        let audio = document.createElement("audio");
-        
-        audio.src = "../docs/audio/doh_wav_cut.wav";
-        audio.loop = false;
-        audio.play();
-        this.car.div.appendChild(audio)
     }
 }
 window.addEventListener("load", () => new Game())
