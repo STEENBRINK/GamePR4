@@ -13,12 +13,15 @@ class Game {
     private speed:number
     private health:number
     private audioFiles:Array<string>
+    private heart:Heart
+    private scoreModifier:number
 
     constructor() {
         this.health=3
         this.speed = 2000
+        this.scoreModifier = 0
         this.explosions = new Array<Explosion>()
-        this.audioFiles = new Array("explosion.flac", "gameover.wav", "car.wav")
+        this.audioFiles = new Array("explosion.flac", "gameover.wav", "car.wav", "heart.wav")
         //create backgrounds
         this.backgrounds = new Array<Background>()
         this.backgrounds.push(new Background(0, "0"))
@@ -41,6 +44,7 @@ class Game {
         this.bombs = new Array<Bomb>()
         this.bombCounter = document.getElementsByTagName("bomb").length
         this.checkBomb()
+        this.createHeart()
         //initiate game loop
         this.gameLoop()
     }
@@ -48,7 +52,7 @@ class Game {
     private gameLoop(){
         //console.log(this.health)
         if(this.health>0){
-            this.checkCollision()
+            this.checkBombCollision()
             this.checkBackgrounds()
             this.car.move()
             for(let k of this.bombs){
@@ -59,6 +63,11 @@ class Game {
             }
             this.registerScore()
 
+            if(this.heart){
+                this.checkHeartCollision()
+                this.heart.checkOutOfBounds()
+            }
+
             requestAnimationFrame(()=>this.gameLoop())
         }else{
             let gameOver:HTMLElement = document.createElement("gameover")
@@ -68,6 +77,21 @@ class Game {
             setTimeout(()=> {
                 let audio = new SoundPlayer(this.car, this.audioFiles[1])
             }, 800)
+        }
+    }
+
+    private createHeart():void{
+        if(this.health > 0){
+            let temp: number = Math.random()*3
+            //console.log(temp)
+            if(temp<1){
+                this.heart = new Heart(75, 0)
+            }else if (temp<2){
+                this.heart = new Heart(300, 1)
+            }else{
+                this.heart = new Heart(535, 2)
+            }
+            setTimeout(()=>this.createHeart(), 20000)
         }
     }
 
@@ -93,7 +117,7 @@ class Game {
 
     private createBomb(): void {
         let temp: number = Math.random()*3
-        console.log(temp)
+        //console.log(temp)
         if(temp<1){
             this.bombs.push(new Bomb(75, 0))
         }else if (temp<2){
@@ -106,14 +130,14 @@ class Game {
 
     registerScore(){
         let time:number = new Date().getTime()
-        this.score=time-this.startTime
+        this.score=time-this.startTime+this.scoreModifier
         //console.log(this.score)
         this.scoreElement.innerHTML = "Score: " + this.score
 
         this.speed = 2000-(this.score/1000)
     }
 
-    checkCollision():void {
+    checkBombCollision():void {
         for(let i of this.bombs){
             if(i.lane == this.car.lane){
                 if((i.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((i.getRectangle().left) > this.car.getRectangle().left)){
@@ -122,7 +146,20 @@ class Game {
                     let audio = new SoundPlayer(this.car, this.audioFiles[0])
                     this.health--
                     this.healthELement.innerHTML = "Health: " + this.health
+                    this.scoreModifier -= 5000
                 }
+            }
+        }
+    }
+    
+    checkHeartCollision():void {
+        if(this.heart.lane == this.car.lane && this.health > 0){
+            if((this.heart.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((this.heart.getRectangle().left) > this.car.getRectangle().left)){
+                document.body.removeChild(this.heart.div)
+                let audio = new SoundPlayer(this.car, this.audioFiles[3])
+                this.health++
+                this.healthELement.innerHTML = "Health: " + this.health
+                this.scoreModifier += 5000
             }
         }
     }

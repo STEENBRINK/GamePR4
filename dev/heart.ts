@@ -1,7 +1,7 @@
 /// <reference path="roadobjects.ts"/>
 
-class Bomb extends RoadObject {
+class Heart extends RoadObject{
     constructor(y:number, lane:number){
-        super("bomb", lane, 1280, y, -8)
+        super("heart", lane, 1280, y, -8)
     }
 }

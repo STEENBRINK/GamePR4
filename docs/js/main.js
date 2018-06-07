@@ -43,19 +43,28 @@ var Background = (function (_super) {
     }
     return Background;
 }(GameObject));
-var Bomb = (function (_super) {
-    __extends(Bomb, _super);
-    function Bomb(y, lane) {
-        return _super.call(this, "bomb", lane, 1280, y, -8) || this;
+var RoadObject = (function (_super) {
+    __extends(RoadObject, _super);
+    function RoadObject(element, lane, x, y, xSpeed, ySpeed) {
+        if (xSpeed === void 0) { xSpeed = 0; }
+        if (ySpeed === void 0) { ySpeed = 0; }
+        return _super.call(this, element, lane, x, y, xSpeed, ySpeed) || this;
     }
-    Bomb.prototype.checkOutOfBounds = function () {
+    RoadObject.prototype.checkOutOfBounds = function () {
         if (this.getRectangle().left < -100) {
             document.body.removeChild(this.div);
         }
         _super.prototype.move.call(this);
     };
-    return Bomb;
+    return RoadObject;
 }(GameObject));
+var Bomb = (function (_super) {
+    __extends(Bomb, _super);
+    function Bomb(y, lane) {
+        return _super.call(this, "bomb", lane, 1280, y, -8) || this;
+    }
+    return Bomb;
+}(RoadObject));
 var Car = (function (_super) {
     __extends(Car, _super);
     function Car() {
@@ -117,8 +126,9 @@ var Game = (function () {
     function Game() {
         this.health = 3;
         this.speed = 2000;
+        this.scoreModifier = 0;
         this.explosions = new Array();
-        this.audioFiles = new Array("explosion.flac", "gameover.wav", "car.wav");
+        this.audioFiles = new Array("explosion.flac", "gameover.wav", "car.wav", "heart.wav");
         this.backgrounds = new Array();
         this.backgrounds.push(new Background(0, "0"));
         this.backgrounds.push(new Background(1280, "1"));
@@ -137,12 +147,13 @@ var Game = (function () {
         this.bombs = new Array();
         this.bombCounter = document.getElementsByTagName("bomb").length;
         this.checkBomb();
+        this.createHeart();
         this.gameLoop();
     }
     Game.prototype.gameLoop = function () {
         var _this = this;
         if (this.health > 0) {
-            this.checkCollision();
+            this.checkBombCollision();
             this.checkBackgrounds();
             this.car.move();
             for (var _i = 0, _a = this.bombs; _i < _a.length; _i++) {
@@ -154,6 +165,10 @@ var Game = (function () {
                 i.checkOutOfBounds();
             }
             this.registerScore();
+            if (this.heart) {
+                this.checkHeartCollision();
+                this.heart.checkOutOfBounds();
+            }
             requestAnimationFrame(function () { return _this.gameLoop(); });
         }
         else {
@@ -164,6 +179,22 @@ var Game = (function () {
             setTimeout(function () {
                 var audio = new SoundPlayer(_this.car, _this.audioFiles[1]);
             }, 800);
+        }
+    };
+    Game.prototype.createHeart = function () {
+        var _this = this;
+        if (this.health > 0) {
+            var temp = Math.random() * 3;
+            if (temp < 1) {
+                this.heart = new Heart(75, 0);
+            }
+            else if (temp < 2) {
+                this.heart = new Heart(300, 1);
+            }
+            else {
+                this.heart = new Heart(535, 2);
+            }
+            setTimeout(function () { return _this.createHeart(); }, 20000);
         }
     };
     Game.prototype.checkBackgrounds = function () {
@@ -188,7 +219,6 @@ var Game = (function () {
     };
     Game.prototype.createBomb = function () {
         var temp = Math.random() * 3;
-        console.log(temp);
         if (temp < 1) {
             this.bombs.push(new Bomb(75, 0));
         }
@@ -202,11 +232,11 @@ var Game = (function () {
     };
     Game.prototype.registerScore = function () {
         var time = new Date().getTime();
-        this.score = time - this.startTime;
+        this.score = time - this.startTime + this.scoreModifier;
         this.scoreElement.innerHTML = "Score: " + this.score;
         this.speed = 2000 - (this.score / 1000);
     };
-    Game.prototype.checkCollision = function () {
+    Game.prototype.checkBombCollision = function () {
         for (var _i = 0, _a = this.bombs; _i < _a.length; _i++) {
             var i = _a[_i];
             if (i.lane == this.car.lane) {
@@ -216,13 +246,32 @@ var Game = (function () {
                     var audio = new SoundPlayer(this.car, this.audioFiles[0]);
                     this.health--;
                     this.healthELement.innerHTML = "Health: " + this.health;
+                    this.scoreModifier -= 5000;
                 }
+            }
+        }
+    };
+    Game.prototype.checkHeartCollision = function () {
+        if (this.heart.lane == this.car.lane && this.health > 0) {
+            if ((this.heart.getRectangle().left < (this.car.getRectangle().left + this.car.getRectangle().width)) && ((this.heart.getRectangle().left) > this.car.getRectangle().left)) {
+                document.body.removeChild(this.heart.div);
+                var audio = new SoundPlayer(this.car, this.audioFiles[3]);
+                this.health++;
+                this.healthELement.innerHTML = "Health: " + this.health;
+                this.scoreModifier += 5000;
             }
         }
     };
     return Game;
 }());
 window.addEventListener("load", function () { return new Game(); });
+var Heart = (function (_super) {
+    __extends(Heart, _super);
+    function Heart(y, lane) {
+        return _super.call(this, "heart", lane, 1280, y, -8) || this;
+    }
+    return Heart;
+}(RoadObject));
 var SoundPlayer = (function () {
     function SoundPlayer(car, name) {
         this.playSound(name, car);
