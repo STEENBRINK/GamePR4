@@ -46,17 +46,7 @@ class Game {
         //console.log(this.health)
         if(this.health>0){
             this.checkCollision()
-            for(let i = 0; i<(this.backgrounds.length);i++){
-                if(this.backgrounds[i].getRectangle().left <= -1280){
-                    //console.log("i: " + i)
-                    document.body.removeChild(this.backgrounds[i].div)
-                    this.backgrounds.splice(i,1)
-                    this.backgrounds.push(new Background(1280, this.bgCounter.toString()))
-                    this.bgCounter++
-                }else{
-                    this.backgrounds[i].move();
-                }
-            }
+            this.checkBackgrounds()
             this.car.move()
             for(let k of this.bombs){
                 k.checkOutOfBounds();
@@ -72,6 +62,20 @@ class Game {
             document.body.appendChild(gameOver)
             gameOver.addEventListener("click", ()=> location.reload())
             gameOver.innerHTML = "Game Over"
+            setTimeout(this.dohSound(), 500)
+        }
+    }
+
+    private checkBackgrounds():void{
+        for(let back = 0; back<(this.backgrounds.length);back++){
+            if(this.backgrounds[back].getRectangle().left <= -1280){
+                document.body.removeChild(this.backgrounds[back].div)
+                this.backgrounds.splice(back,1)
+                this.backgrounds.push(new Background(1280, this.bgCounter.toString()))
+                this.bgCounter++
+            }else{
+                this.backgrounds[back].move();
+            }
         }
     }
 
@@ -110,12 +114,30 @@ class Game {
                 if((i.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((i.getRectangle().left) > this.car.getRectangle().left)){
                     this.explosions.push(new Explosion(i.x, i.y, i.lane))
                     document.body.removeChild(i.div)
+                    this.explosionSound()
                     this.health--
                     this.healthELement.innerHTML = "Health: " + this.health
                 }
             }
         }
     }
-}
 
+    explosionSound():void{
+        let audio = document.createElement("audio");
+        
+        audio.src = "../docs/audio/DeathFlash.flac";
+        audio.loop = false;
+        audio.play();
+        this.car.div.appendChild(audio)
+    }
+
+    dohSound():void{
+        let audio = document.createElement("audio");
+        
+        audio.src = "../docs/audio/doh_wav_cut.wav";
+        audio.loop = false;
+        audio.play();
+        this.car.div.appendChild(audio)
+    }
+}
 window.addEventListener("load", () => new Game())

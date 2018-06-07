@@ -36,7 +36,7 @@ var GameObject = (function () {
 var Background = (function (_super) {
     __extends(Background, _super);
     function Background(x, i) {
-        var _this = _super.call(this, "background", x, 0, -5) || this;
+        var _this = _super.call(this, "background", 0, x, 0, -5) || this;
         _this.div.setAttribute("id", i);
         _this.y = 0;
         return _this;
@@ -141,17 +141,7 @@ var Game = (function () {
         var _this = this;
         if (this.health > 0) {
             this.checkCollision();
-            for (var i = 0; i < (this.backgrounds.length); i++) {
-                if (this.backgrounds[i].getRectangle().left <= -1280) {
-                    document.body.removeChild(this.backgrounds[i].div);
-                    this.backgrounds.splice(i, 1);
-                    this.backgrounds.push(new Background(1280, this.bgCounter.toString()));
-                    this.bgCounter++;
-                }
-                else {
-                    this.backgrounds[i].move();
-                }
-            }
+            this.checkBackgrounds();
             this.car.move();
             for (var _i = 0, _a = this.bombs; _i < _a.length; _i++) {
                 var k = _a[_i];
@@ -169,6 +159,20 @@ var Game = (function () {
             document.body.appendChild(gameOver);
             gameOver.addEventListener("click", function () { return location.reload(); });
             gameOver.innerHTML = "Game Over";
+            setTimeout(this.dohSound(), 500);
+        }
+    };
+    Game.prototype.checkBackgrounds = function () {
+        for (var back = 0; back < (this.backgrounds.length); back++) {
+            if (this.backgrounds[back].getRectangle().left <= -1280) {
+                document.body.removeChild(this.backgrounds[back].div);
+                this.backgrounds.splice(back, 1);
+                this.backgrounds.push(new Background(1280, this.bgCounter.toString()));
+                this.bgCounter++;
+            }
+            else {
+                this.backgrounds[back].move();
+            }
         }
     };
     Game.prototype.checkBomb = function () {
@@ -205,11 +209,26 @@ var Game = (function () {
                 if ((i.getRectangle().left < (this.car.getRectangle().left + this.car.getRectangle().width)) && ((i.getRectangle().left) > this.car.getRectangle().left)) {
                     this.explosions.push(new Explosion(i.x, i.y, i.lane));
                     document.body.removeChild(i.div);
+                    this.explosionSound();
                     this.health--;
                     this.healthELement.innerHTML = "Health: " + this.health;
                 }
             }
         }
+    };
+    Game.prototype.explosionSound = function () {
+        var audio = document.createElement("audio");
+        audio.src = "../docs/audio/DeathFlash.flac";
+        audio.loop = false;
+        audio.play();
+        this.car.div.appendChild(audio);
+    };
+    Game.prototype.dohSound = function () {
+        var audio = document.createElement("audio");
+        audio.src = "../docs/audio/doh_wav_cut.wav";
+        audio.loop = false;
+        audio.play();
+        this.car.div.appendChild(audio);
     };
     return Game;
 }());
