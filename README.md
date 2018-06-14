@@ -1,24 +1,26 @@
 # Inleverdocument CMTTHE01-4
 
-Dit is een opzet voor het inleverdocument. De exacte instructies vind je in de Modulewijzer.
-
 ## Speelbare game
 
-Link naar de online speelbare game.
+https://stud.hosted.hr.nl/0953623/spel/index.php
 
 ## Checklist
 
 - [x] De game heeft een startscherm en een eindscherm.
 - [x] Er zijn geen bugs.
+- [x] Classes
+- [x] Encapsulation
+- [x] Composition
+- [x] Inheritance
 
 ## Toelichting OOP 
 
 Licht toe waar en waarom je deze OOP principes hebt toegepast
 
-- Classes
-- Encapsulation 
-- Composition
-- Inheritance
+- Classes -> Overal omdat dat het hele punt van typescript is
+- Encapsulation -> Ik gebruik veel getters en setters om de variablen zelf zo lokaal mogelijk te houden
+- Composition -> Mijn playscreens staan in de games, alle game-objecten in de gamescreen etc
+- Inheritance -> Mijn gameobjecten extenden gameobject. Sommige extenden roadobject en die extend dan weer gameobject.
 
 ## Klassendiagram
 
