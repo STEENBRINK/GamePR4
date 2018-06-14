@@ -1,16 +1,35 @@
-# Typescript startproject
+# Inleverdocument CMTTHE01-4
 
-Dit is een leeg startproject voor de oefeningen in CMTTHE01-4 en PRG01-8. 
+Dit is een opzet voor het inleverdocument. De exacte instructies vind je in de Modulewijzer.
 
-## Het project
+## Speelbare game
 
-- De **docs** map bevat de client side:html en css. De js file wordt hier automatisch in gezet door de compiler.
-- De **dev** map bevat de typescript files.
-- **game.ts** is het startpunt van de app. Hierin staat de window listener die een `new Game()` maakt.
+Link naar de online speelbare game.
 
-## Compileren
-- Druk op CMD+SHIFT+B en kies voor `watch mode`. Je `.ts` files worden nu samengevoegd in `main.js`.
-- tsconfig.json bevat instellingen voor het compileren.
+## Checklist
 
-## Bekijken
-Open index.html in `localhost`
+- [ ] De game heeft een startscherm en een eindscherm.
+- [ ] Er zijn geen bugs.
+
+## Toelichting OOP 
+
+Licht toe waar en waarom je deze OOP principes hebt toegepast
+
+- Classes
+- Encapsulation 
+- Composition
+- Inheritance
+
+## Klassendiagram
+
+Een klassendiagram van de game.
+
+## Peer review
+
+Ik heb de game van Ruben gereviewd. Link: https://github.com/0944285/CMTTHE4-Typescript-gameproject
+
+Het is een goed uitziende game, een remake van een classic. De code zit goed in elkaar, goed gebruik gemaakt van inheritance en classes. Af en toe mis je wel een beetje overzicht en ik heb het idee dat er wat dingen inzitten die niet gebruikt worden, maar de game werkt goed en de code is wel duidelijk.
+
+## Extra uitdaging
+
+Licht toe welke extra uitdaging uit de modulewijzer je hebt toegepast.
