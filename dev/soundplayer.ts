@@ -1,15 +1,15 @@
 class SoundPlayer {
-    constructor(car:Car, name:string){
-        this.playSound(name, car)
+    constructor(html:HTMLElement, name:string){
+        this.playSound(name, html)
     }
 
-    playSound(name:string, car:Car):void{
+    playSound(name:string, html:HTMLElement):void{
         let audio = document.createElement("audio");
         
         audio.src = "../docs/audio/" + name;
         audio.loop = false;
         audio.play();
-        car.div.appendChild(audio)
+        html.appendChild(audio)
     }
     
 }

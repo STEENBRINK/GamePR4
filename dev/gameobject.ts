@@ -1,14 +1,14 @@
 class GameObject {
-    public div : HTMLElement
-    public x : number
-    public y : number
-    public speedX: number
+    protected div : HTMLElement
+    protected x : number
+    protected y : number
+    protected speedX: number
     protected speedY: number
-    public lane:number
+    protected lane:number
     
-    constructor(element:string, lane:number, x:number, y:number, speedX:number=0, speedY:number=0) {
+    constructor(playscreen:HTMLElement, element:string, lane:number, x:number, y:number, speedX:number=0, speedY:number=0) {
         this.div = document.createElement(element)
-        document.body.appendChild(this.div)
+        playscreen.appendChild(this.div)
         
         this.lane=lane
 
@@ -26,11 +26,19 @@ class GameObject {
         this.draw()
     }
 
-    protected draw() : void {
+    private draw() : void {
         this.div.style.transform = `translate(${this.x}px, ${this.y}px)`
     }
 
     public getRectangle() {
         return this.div.getBoundingClientRect()
+    }
+
+    public getLane():number{
+        return this.lane
+    }
+
+    public getDiv():HTMLElement{
+        return this.div
     }
 }

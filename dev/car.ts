@@ -2,15 +2,16 @@
 
 class Car extends GameObject{
 
-    private upkey:number;
+    public upkey:number;
     private downkey:number;
+    private onEventListener:any;
 
-    constructor(){
-        super("car", 0, 100, 75);
+    constructor(p:HTMLElement){
+        super(p, "car", 0, 100, 75);
         this.upkey = 38
         this.downkey = 40
-
-        window.addEventListener("keydown", (e: KeyboardEvent) => this.onKeyDown(e))
+        this.onEventListener = (e: KeyboardEvent) => this.onKeyDown(e)
+        window.addEventListener("keydown", this.onEventListener)
     }
 
     onKeyDown(e:KeyboardEvent): void {
@@ -47,5 +48,10 @@ class Car extends GameObject{
                 break
         }
         
+    }
+
+    public removeMe(){
+        window.removeEventListener("keydown", this.onEventListener)
+        this.div.remove()
     }
 }

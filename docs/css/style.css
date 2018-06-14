@@ -2,7 +2,7 @@ body {
     background-image: url(../images/road.png);
     background-repeat: no-repeat;
     background-color: black;
-    font-family: 'Press Start 2P', cursive;
+    font-family: "Comic Sans MS", cursive, sans-serif;
     color:white;
     font-size:22px;
     overflow:hidden;
@@ -78,8 +78,17 @@ health{
     left: 20px;
     top: 60px;
     z-index: 1;
+    width:100px;
 }
 
 * {
     box-sizing: border-box;
+}
+
+pausescreen{
+    height:20px;
+    color:red;
+    z-index:1;
+    cursor: pointer;
+    text-align: center;
 }

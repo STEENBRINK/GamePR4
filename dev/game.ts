@@ -1,104 +1,48 @@
-class Game {
-
+class Game{
     private backgrounds:Array<Background>
     private bgCounter: number
-    private bombCounter: number
-    private car:Car
-    private bombs:Array<Bomb>
-    private explosions:Array<Explosion>
+    private gamescreen:any
     private score:number
-    private startTime:number
+    private modifier:number
     private scoreElement:HTMLElement
-    private healthELement:HTMLElement
-    private speed:number
-    private health:number
     private audioFiles:Array<string>
-    private heart:Heart
-    private scoreModifier:number
-
-    constructor() {
-        this.health=3
-        this.speed = 2000
-        this.scoreModifier = 0
-        this.explosions = new Array<Explosion>()
+    private audioElement:HTMLElement
+    
+    constructor(){
+        this.modifier = 0
+        //audio
+        this.audioElement = document.createElement("audio")
+        document.body.appendChild(this.audioElement)
         this.audioFiles = new Array("explosion.flac", "gameover.wav", "car.wav", "heart.wav")
+        let audio = new SoundPlayer(this.audioElement, this.audioFiles[2])
         //create backgrounds
         this.backgrounds = new Array<Background>()
         this.backgrounds.push(new Background(0, "0"))
         this.backgrounds.push(new Background(1280, "1"))
         this.bgCounter = 2
-        //create score element
+        //create score
         this.score = 0
-        let date = new Date()
-        this.startTime = date.getTime()
         this.scoreElement = document.createElement("score")
-        this.healthELement = document.createElement("health")
         document.body.appendChild(this.scoreElement)
-        document.body.appendChild(this.healthELement)
-        this.scoreElement.innerHTML = this.score.toString()
-        this.healthELement.innerHTML = "Health: " + this.health
-        //create car
-        this.car = new Car()
-        let audio = new SoundPlayer(this.car, this.audioFiles[2])
-        //create bombs
-        this.bombs = new Array<Bomb>()
-        this.bombCounter = document.getElementsByTagName("bomb").length
-        this.checkBomb()
-        this.createHeart()
-        //initiate game loop
+        this.scoreElement.innerHTML = ""
+
+        this.gamescreen = new PauseScreen(this, "Welcome <br> Start Game")
+
         this.gameLoop()
     }
-    
-    private gameLoop(){
-        //console.log(this.health)
-        if(this.health>0){
-            this.checkBombCollision()
-            this.checkBackgrounds()
-            this.car.move()
-            for(let k of this.bombs){
-                k.checkOutOfBounds();
-            }
-            for(let i of this.explosions){
-                i.checkOutOfBounds();
-            }
-            this.registerScore()
 
-            if(this.heart){
-                this.checkHeartCollision()
-                this.heart.checkOutOfBounds()
-            }
+    private gameLoop():void{
+        this.checkBackgrounds()
 
-            requestAnimationFrame(()=>this.gameLoop())
-        }else{
-            let gameOver:HTMLElement = document.createElement("gameover")
-            document.body.appendChild(gameOver)
-            gameOver.addEventListener("click", ()=> location.reload())
-            gameOver.innerHTML = "Game Over"
-            setTimeout(()=> {
-                let audio = new SoundPlayer(this.car, this.audioFiles[1])
-            }, 800)
-        }
-    }
+        this.gamescreen.update()
 
-    private createHeart():void{
-        if(this.health > 0){
-            let temp: number = Math.random()*3
-            //console.log(temp)
-            if(temp<1){
-                this.heart = new Heart(75, 0)
-            }else if (temp<2){
-                this.heart = new Heart(300, 1)
-            }else{
-                this.heart = new Heart(535, 2)
-            }
-            setTimeout(()=>this.createHeart(), 20000)
-        }
+        requestAnimationFrame(()=>this.gameLoop())
     }
 
     private checkBackgrounds():void{
         for(let back = 0; back<(this.backgrounds.length);back++){
             if(this.backgrounds[back].getRectangle().left <= -1280){
-                document.body.removeChild(this.backgrounds[back].div)
+                document.body.removeChild(this.backgrounds[back].getDiv())
                 this.backgrounds.splice(back,1)
                 this.backgrounds.push(new Background(1280, this.bgCounter.toString()))
                 this.bgCounter++
@@ -108,60 +52,41 @@ class Game {
         }
     }
 
-    private checkBomb(): void{
-        if (this.bombCounter<15 && this.health > 0) {
-            this.createBomb()
-        }
-        setTimeout(()=> this.checkBomb(), this.speed)
+    public getAudioFiles():Array<string>{
+        return this.audioFiles
     }
 
-    private createBomb(): void {
-        let temp: number = Math.random()*3
-        //console.log(temp)
-        if(temp<1){
-            this.bombs.push(new Bomb(75, 0))
-        }else if (temp<2){
-            this.bombs.push(new Bomb(300, 1))
-        }else{
-            this.bombs.push(new Bomb(535, 2))
-        }
-        this.bombCounter = document.getElementsByTagName("bomb").length
+    public setScore(score:number):void{
+        this.score = score
+        this.scoreElement.innerHTML = "Score: " + this.score + " (" + this.modifier + " bonus points!)"
     }
 
-    registerScore(){
-        let time:number = new Date().getTime()
-        this.score=time-this.startTime+this.scoreModifier
-        //console.log(this.score)
-        this.scoreElement.innerHTML = "Score: " + this.score
-
-        this.speed = 2000-(this.score/1000)
+    public getScore():number{
+        return this.score
     }
 
-    checkBombCollision():void {
-        for(let i of this.bombs){
-            if(i.lane == this.car.lane){
-                if((i.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((i.getRectangle().left) > this.car.getRectangle().left)){
-                    this.explosions.push(new Explosion(i.x, i.y, i.lane))
-                    document.body.removeChild(i.div)
-                    let audio = new SoundPlayer(this.car, this.audioFiles[0])
-                    this.health--
-                    this.healthELement.innerHTML = "Health: " + this.health
-                    this.scoreModifier -= 5000
-                }
-            }
-        }
+    public setModifier(modifier:number):void{
+        this.modifier += modifier
     }
-    
-    checkHeartCollision():void {
-        if(this.heart.lane == this.car.lane && this.health > 0){
-            if((this.heart.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((this.heart.getRectangle().left) > this.car.getRectangle().left)){
-                document.body.removeChild(this.heart.div)
-                let audio = new SoundPlayer(this.car, this.audioFiles[3])
-                this.health++
-                this.healthELement.innerHTML = "Health: " + this.health
-                this.scoreModifier += 5000
-            }
+
+    public gameover():void{
+        if(this.gamescreen instanceof PlayScreen){
+            this.gamescreen.removeMe()
         }
+        this.gamescreen = new PauseScreen(this, "Gameover <br> Try Again")
     }
+
+    public startGame():void{
+        if(this.gamescreen instanceof PauseScreen){
+            this.gamescreen.removeMe()
+        }
+        this.gamescreen = new PlayScreen(this)
+    }
+
+    public getAudioElement():HTMLElement{
+        return this.audioElement
+    }
+
 }
+
 window.addEventListener("load", () => new Game())
