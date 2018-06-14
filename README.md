@@ -8,8 +8,8 @@ Link naar de online speelbare game.
 
 ## Checklist
 
-- [ ] De game heeft een startscherm en een eindscherm.
-- [ ] Er zijn geen bugs.
+- [x] De game heeft een startscherm en een eindscherm.
+- [x] Er zijn geen bugs.
 
 ## Toelichting OOP 
 
@@ -21,8 +21,6 @@ Licht toe waar en waarom je deze OOP principes hebt toegepast
 - Inheritance
 
 ## Klassendiagram
-
-
 
 ![Concept ontwerp image](https://stud.hosted.hr.nl/0953623/wp-content/uploads/2018/05/ClassDiagram-GamePR4.png)
 
@@ -42,4 +40,5 @@ Het is een goed uitziende game, een remake van een classic. De code zit goed in 
 
 ## Extra uitdaging
 
-Licht toe welke extra uitdaging uit de modulewijzer je hebt toegepast.
+Niet gedaan, ik heb er wel mee gespeeld, maar kreeg het niet voor elkaar de dingen te implementeren en werd er ernstig geïriteerd van. 
+Ik kon namelijk niet eens beginnen met proberen er mee te spelen.
