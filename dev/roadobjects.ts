@@ -5,7 +5,7 @@ class RoadObject extends GameObject {
         super(playscreen, element, lane, x, y, xSpeed, ySpeed)
     }
 
-    checkOutOfBounds():void{
+    public checkOutOfBounds():void{
         if(this.getRectangle().left < -100){
             this.div.remove()
         }

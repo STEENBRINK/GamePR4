@@ -2,7 +2,7 @@
 
 class Car extends GameObject{
 
-    public upkey:number;
+    private upkey:number;
     private downkey:number;
     private onEventListener:any;
 
@@ -14,7 +14,7 @@ class Car extends GameObject{
         window.addEventListener("keydown", this.onEventListener)
     }
 
-    onKeyDown(e:KeyboardEvent): void {
+    private onKeyDown(e:KeyboardEvent): void {
         switch (e.keyCode) {
             case this.upkey:
                 console.log(this.lane)
@@ -50,7 +50,7 @@ class Car extends GameObject{
         
     }
 
-    public removeMe(){
+    public removeMe():void{
         window.removeEventListener("keydown", this.onEventListener)
         this.div.remove()
     }

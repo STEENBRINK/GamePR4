@@ -50,9 +50,6 @@ var GameObject = (function () {
         this.x += this.speedX;
         this.draw();
     };
-    GameObject.prototype.draw = function () {
-        this.div.style.transform = "translate(" + this.x + "px, " + this.y + "px)";
-    };
     GameObject.prototype.getRectangle = function () {
         return this.div.getBoundingClientRect();
     };
@@ -61,6 +58,9 @@ var GameObject = (function () {
     };
     GameObject.prototype.getDiv = function () {
         return this.div;
+    };
+    GameObject.prototype.draw = function () {
+        this.div.style.transform = "translate(" + this.x + "px, " + this.y + "px)";
     };
     return GameObject;
 }());
@@ -372,15 +372,12 @@ var PlayScreen = (function () {
 }());
 var SoundPlayer = (function () {
     function SoundPlayer(html, name) {
-        this.playSound(name, html);
-    }
-    SoundPlayer.prototype.playSound = function (name, html) {
         var audio = document.createElement("audio");
         audio.src = "../docs/audio/" + name;
         audio.loop = false;
         audio.play();
         html.appendChild(audio);
-    };
+    }
     return SoundPlayer;
 }());
 //# sourceMappingURL=main.js.map

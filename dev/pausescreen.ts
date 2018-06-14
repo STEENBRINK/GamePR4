@@ -13,7 +13,7 @@ class PauseScreen{
         this.div.addEventListener("click", this.onEventListener)
     }
 
-    public getRectangle() {
+    public getRectangle():ClientRect {
         return this.div.getBoundingClientRect()
     }
 

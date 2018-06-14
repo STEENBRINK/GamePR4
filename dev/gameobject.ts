@@ -26,11 +26,7 @@ class GameObject {
         this.draw()
     }
 
-    private draw() : void {
-        this.div.style.transform = `translate(${this.x}px, ${this.y}px)`
-    }
-
-    public getRectangle() {
+    public getRectangle():ClientRect {
         return this.div.getBoundingClientRect()
     }
 
@@ -40,5 +36,9 @@ class GameObject {
 
     public getDiv():HTMLElement{
         return this.div
+    }
+
+    private draw() : void {
+        this.div.style.transform = `translate(${this.x}px, ${this.y}px)`
     }
 }

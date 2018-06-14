@@ -102,7 +102,7 @@ class PlayScreen {
         this.bombCounter = document.getElementsByTagName("bomb").length
     }
 
-    registerScore(){
+    private registerScore():void{
         let time:number = new Date().getTime()
         this.game.setScore(time-this.startTime+this.scoreModifier)
         //console.log(this.score)
@@ -115,7 +115,7 @@ class PlayScreen {
         this.speed = 2000-(this.game.getScore()/1000)
     }
 
-    checkBombCollision():void {
+    private checkBombCollision():void {
         for(let bomb of this.bombs){
             if(bomb.getLane() == this.car.getLane()){
                 if((bomb.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((bomb.getRectangle().left) > this.car.getRectangle().left)){
@@ -132,7 +132,7 @@ class PlayScreen {
         }
     }
     
-    checkHeartCollision():void {
+    private checkHeartCollision():void {
         if(this.heart.getLane() == this.car.getLane() && this.health > 0){
             if((this.heart.getRectangle().left < (this.car.getRectangle().left+this.car.getRectangle().width))&&((this.heart.getRectangle().left) > this.car.getRectangle().left)){
                 this.heart.getDiv().remove()
@@ -145,7 +145,7 @@ class PlayScreen {
         }
     }
 
-    removeMe():void{
+    public removeMe():void{
         this.screenElement.remove()
     }
 

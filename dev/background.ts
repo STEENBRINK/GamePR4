@@ -26,7 +26,7 @@ class Background {
         this.div.style.transform = `translate(${this.x}px, ${this.y}px)`
     }
 
-    public getRectangle() {
+    public getRectangle():ClientRect {
         return this.div.getBoundingClientRect()
     }
 
